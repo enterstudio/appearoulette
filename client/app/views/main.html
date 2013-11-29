@@ -1,0 +1,14 @@
+<header>
+    <h1>appearoulette.com</h1>
+    <p>Number of people here: {{ clientCount }}</p>
+</header>
+
+<button ng-click="randomize()" ng-enabled="status!=searching">Talk someone random!</button>
+
+<p>Status: {{ status }}</p>
+
+<p>Room: {{ roomName }}</p>
+<p>Support: <span id="webrtc-support"></span></p>
+
+<iframe ng-show="roomName" ng-src="{{ roomName }}" frameborder="0" style="height: 400px; width: 100%;"></iframe>
+

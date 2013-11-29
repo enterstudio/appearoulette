@@ -2,7 +2,7 @@
 
 angular.module('clientApp')
   .factory('socket', function ($rootScope) {
-        var socket = io.connect('http://localhost:3000');
+        var socket = io.connect('http://video-conference.skunklet-works.no:8443');
         return {
             on: function (eventName, callback) {
                 socket.on(eventName, function () {

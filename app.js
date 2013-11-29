@@ -13,7 +13,7 @@ var path = require('path');
 var sample = require('./api/sample')(io);
 
 // all environments
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 8443);
 //app.set('views', __dirname + '/views');
 //app.set('view engine', 'jshtml');
 app.use(express.favicon());

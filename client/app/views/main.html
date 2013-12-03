@@ -3,7 +3,7 @@
     <p>Number of people here: {{ clientCount }}</p>
 </header>
 
-<button ng-click="randomize()" ng-enabled="status!=searching">Talk someone random!</button>
+<button ng-click="randomize()" ng-disabled="status=='searching'">Talk someone random!</button>
 
 <p>Status: {{ status }}</p>
 

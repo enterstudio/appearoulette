@@ -95,6 +95,9 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('getPairing', function (socket) {
+        if (client.isSearcing) {
+            return;
+        }
         // if the client already is in a pool, destroy the pairing
         if (client.inRoom) {
             var pair = pairs[client.roomName];
@@ -110,6 +113,7 @@ io.sockets.on('connection', function (socket) {
 
         // put client in pool
         pairingPool.push(client);
+        client.isSearching = true;
 
         var attemptPairing = function () {
             var numberOfClientsInRoom = 2;
@@ -119,11 +123,14 @@ io.sockets.on('connection', function (socket) {
 
                 var pairing = [];
                 for(var i=0; i<numberOfClientsInRoom; i++) {
-                    var c = pairingPool.splice([Math.round(Math.random()*(pairingPool.length-1))], 1)[0];
-                    c.inRoom = true;
-                    c.roomName = roomName;
-                    c.socket.emit('paired', {"roomName": roomName});
-                    pairing.push(c);
+                    var c = pairingPool.splice([Math.round(Math.random()*(pairingPool.length-1))], 1);
+                    c.forEach(function (cli) {
+                        cli.inRoom = true;
+                        cli.roomName = roomName;
+                        cli.isSearching = false;
+                        cli.socket.emit('paired', {"roomName": roomName});
+                        pairing.push(cli);
+                    });
                 }
 
                 pairs[roomName] = pairing;
@@ -136,4 +143,8 @@ io.sockets.on('connection', function (socket) {
     });
 });
 
-
+// var logger = function () {
+//     console.log(pairingPool);
+//     setTimeout(logger, 1000);
+// }
+// logger();

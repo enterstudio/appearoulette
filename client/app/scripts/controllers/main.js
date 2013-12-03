@@ -18,7 +18,6 @@ angular.module('clientApp')
         }
 
         var onClientCountUpdated = function (data) {
-            console.log(data);
             $scope.clientCount = data.clientCount;
         }
 
@@ -32,4 +31,7 @@ angular.module('clientApp')
         socket.on('clientCountUpdated', onClientCountUpdated);
         socket.on('paired', onPaired);
         socket.on('nexted', onNexted);
+        socket.on('log', function (data) {
+            console.log(data);
+        })
     });

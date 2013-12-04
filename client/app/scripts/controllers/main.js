@@ -5,6 +5,7 @@ angular.module('clientApp')
         $scope.clientCount = 0;
 
         var onConnected = function (data) {
+            $scope.status = 'ready';
         }
 
         var onNexted = function (data) {
@@ -31,7 +32,4 @@ angular.module('clientApp')
         socket.on('clientCountUpdated', onClientCountUpdated);
         socket.on('paired', onPaired);
         socket.on('nexted', onNexted);
-        socket.on('log', function (data) {
-            console.log(data);
-        })
     });

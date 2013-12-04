@@ -84,65 +84,35 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('getPairing', function (socket) {
-        if (client.isSearcing) {
-            return;
-        }
-        // if the client already is in a pool, destroy the pairing
-        if (client.inRoom) {
-            var pair = pairs[client.roomName];
-            pair.forEach(function (pairClient) {
-                if (pairClient != client) {
-                    pairClient.socket.emit('nexted');
+       client.isSearching = true;
+
+        if (pairingPool.length > 0) {
+            var pair = [];
+            var randomClient = pairingPool.splice(Math.round(Math.random()*pairingPool.length-1))[0];
+
+            pair.push(client, randomClient);
+
+            var getRandomRoomName = function () {
+                var name '';
+                var alphabet = 'qwertyuiopasdfghjklzxcvbnm1234567890';
+                for (var i=0; i<40; i++) {
+                    name = name + alphabet[Math.round(Math.random()*alphabet.length-1)];
                 }
-                pairClient.roomName = '';
-                pairClient.inRoom = false;
+                return 'https://appear.in/' + name + '?lite';
+            }
+            var roomName = getRandomRoomName();
+
+            pair.forEach(function (cli) {
+                cli.roomName = roomName;
+                cli.inRoom = true;
+                cli.isSearching = false;
+                cli.socket.emit('paired', {"roomName": roomName});
             });
-            delete pairs[client.roomName];
+
+            pairs[roomName] = pair;
         }
-
-        // put client in pool
-        pairingPool.push(client);
-        client.isSearching = true;
-
-        var attemptPairing = function () {
-
-
-            if (pairingPool.length >= 2) {
-                var getRoomName = function () {
-                    var name = '';
-                    var alphabet = 'qwertyuiopasdfghjklzxcvbnm';
-                    for (var i=0; i<40; i++) {
-                        name += alphabet[Math.round(Math.random()*alphabet.length)];
-                    }
-                    return 'https//appear.in/' + name + '?lite';
-                }
-                var roomName = getRoomName();
-
-
-                var pairing = [];
-                var client1, client2;
-
-                client1 = pairingPool.splice(Math.round(Math.random()*pairingPool.length-1), 1);
-                client2 = pairingPool.splice(Math.round(Math.random()*pairingPool.length-1), 1);
-
-                client1.inRoom = true;
-                client1.roomName = roomName;
-                client1.isSearching = false;
-                client1.socket.emit('paired', {'roomName'. roomName});
-
-                client2.inRoom = true;
-                client2.roomName = roomName;
-                client2.isSearching = false;
-                client2.socket.emit('paired', {'roomName'. roomName});
-
-                pairing.push(client1, client2);
-
-                pairs[roomName] = pairing;
-            }
-            else {
-                setTimeout(attemptPairing, 1000);
-            }
+        else {
+            pairingPool.push(client);
         }
-        attemptPairing();
     });
 });

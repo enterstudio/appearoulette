@@ -20,6 +20,7 @@ angular.module('clientApp')
 
         var onClientCountUpdated = function (data) {
             $scope.clientCount = data.clientCount;
+            $scope.pairingPool = data.pairingPool;
         }
 
         $scope.randomize = function () {

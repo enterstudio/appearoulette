@@ -1,6 +1,7 @@
 <header>
     <h1>appearoulette.com</h1>
     <p>Number of people here: {{ clientCount }}</p>
+    <p>People searching: {{ pairingPool }}</p>
 </header>
 
 <button ng-click="randomize()" ng-disabled="status=='searching'">Talk someone random!</button>
@@ -11,4 +12,3 @@
 <p>Support: <span id="webrtc-support"></span></p>
 
 <iframe ng-show="roomName" ng-src="{{ roomName }}" frameborder="0" style="height: 400px; width: 100%;"></iframe>
-

@@ -69,6 +69,9 @@ var getRoomName = function () {
 };
 
 io.sockets.on('connection', function (socket) {
+
+
+
     var client = new Client(socket);
     clients.push(client);
     socket.emit('connected');
@@ -87,18 +90,24 @@ io.sockets.on('connection', function (socket) {
             delete pairs[client.roomName];
         }
 
-        clients.forEach(function (client, iterator) {
-            if (client.socket === socket) {
+        clients.forEach(function (cli, iterator) {
+            if (cli.socket === socket) {
                 clients.splice(iterator, 1);
             }
         });
-        socket.broadcast.emit('clientCountUpdated', {"clientCount": clients.length});
+        pairingPool.forEach(function (cli, iterator) {
+            if (cli.socket === socket) {
+                pairingPool.splice(iterator, 1);
+            }
+        });
+        socket.broadcast.emit('clientCountUpdated', {"clientCount": clients.length, "pairingPool": pairingPool.length});
     });
 
     socket.on('getPairing', function (socket) {
         if (client.isSearcing) {
             return;
         }
+        client.isSearching = true;
         // if the client already is in a pool, destroy the pairing
         if (client.inRoom) {
             var pair = pairs[client.roomName];
@@ -117,7 +126,8 @@ io.sockets.on('connection', function (socket) {
             if (pairingPool.length > 0) {
                 var roomName = getRoomName();
 
-                var pairing = [client, pairingPool.splice([Math.round(Math.random()*(pairingPool.length-1))], 1)];
+                var randomClient = pairingPool.splice(Math.round(Math.random()*(pairingPool.length-1)), 1)[0];
+                var pairing = [client, randomClient];
                 pairing.forEach(function (cli) {
                     cli.inRoom = true;
                     cli.roomName = roomName;
@@ -129,7 +139,6 @@ io.sockets.on('connection', function (socket) {
             }
             else {
                 pairingPool.push(client);
-                // setTimeout(attemptPairing, 1000);
             }
         }
         attemptPairing();
